@@ -18,28 +18,7 @@ export class AppComponent {
   constructor(private service: NodeService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.service.get().subscribe((data: any[])=>{
-      data = data.sort((a, b) => a.id - b.id );
-      this.nodes = [];
-      for(let i = 0; i < data.length; ++i) {
-        const newNode = 
-          new Node(data[i].id, data[i].name, data[i].description, data[i].parent, data[i].read_only)
-          this.nodes.push(newNode);
-      }
-      for(let i = 0; i < this.nodes.length; ++i) {
-        if(this.nodes[i].parent != 0 && this.nodes[i].children){
-          try {
-            this.nodes.filter(n => n.id == this.nodes[i].parent)[0].children.push(this.nodes[i]);
-          }
-          catch {
-            debugger;
-
-          }
-        }
-      }
-      debugger;
-      this.dataSource = new ArrayDataSource(this.nodes.filter(n => n.parent == 0));
-    }); 
+    this.refresh();
   }
 
 
@@ -72,10 +51,15 @@ export class AppComponent {
       
       for(let i = 0; i < this.nodes.length; ++i) {
         if(this.nodes[i].parent != 0){
-          this.nodes.filter(n => n.id == this.nodes[i].parent)[0].children.push(this.nodes[i]);
+          try {
+            this.nodes.filter(n => n.id == this.nodes[i].parent)[0].children.push(this.nodes[i]);
+          }
+          catch {
+            //debugger;
+          }
         }
       }
-      debugger;
+      //debugger;
       this.dataSource = new ArrayDataSource(this.nodes.filter(n => n.parent == 0));
     }); 
   }
