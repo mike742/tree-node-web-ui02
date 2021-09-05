@@ -21,5 +21,6 @@ export class Node {
         this.description = '';
         this.parent = 0;
         this.read_only = 0;
+        this.children = [];
     }
 }

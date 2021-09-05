@@ -12,6 +12,7 @@ export class NodeService {
   constructor(private httpClient: HttpClient) { }
 
   get() : Observable<Node[]>  {
+    debugger;
     return this.httpClient.get<Node[]>(this._server);
   }
 
