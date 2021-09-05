@@ -1,0 +1,159 @@
+<div class="container">
+  <br /><br />
+  <a
+    target="_self"
+    href="https://node-tree-app-01.herokuapp.com/nodes/exportCsv"
+  >
+    <button class="btn btn-success">Download CSV</button>
+  </a>
+  <hr />
+  <cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
+    <!-- This is the tree node template for leaf nodes -->
+    <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="example-tree-node">
+      <!-- use a disabled button to provide padding for tree leaf -->
+      <!-- <button mat-icon-button disabled></button> -->
+      <span style="font-size: 18px">
+        <span *ngIf="node.read_only" style="color: grey; margin-left: 8px">
+          {{ node.name || "empty" }}
+        </span>
+        <span
+          *ngIf="!node.read_only"
+          style="color: blue; cursor: pointer"
+          title="id = {{ node.id }}"
+        >
+          <ngx-edit-inline
+            style="display: inline !important; font-size: 18px"
+            [value]="node.name"
+            [type]="'text'"
+            [selectText]="true"
+            [debounceTime]="5000"
+            [placeholder]="'enter node name'"
+            (onValueChanged)="changedValue({$event, 'id': node.id, 'name': $event})"
+          ></ngx-edit-inline>
+        </span>
+        <mat-icon class="add" (click)="open(content, node.id)"
+          >add_shopping_cart</mat-icon
+        >
+        <mat-icon
+          *ngIf="!node.read_only"
+          class="delete"
+          (click)="delete(node.id)"
+          >delete_forever</mat-icon
+        >
+      </span>
+    </cdk-nested-tree-node>
+    <!-- This is the tree node template for expandable nodes -->
+    <cdk-nested-tree-node
+      *cdkTreeNodeDef="let node; when: hasChild"
+      class="example-tree-node"
+    >
+      <span
+        class="mat-icon-button"
+        [attr.aria-label]="'Toggle ' + node.name"
+        cdkTreeNodeToggle
+      >
+        <mat-icon>
+          {{
+            treeControl.isExpanded(node)
+              ? "keyboard_arrow_down"
+              : "keyboard_arrow_right"
+          }}
+        </mat-icon>
+      </span>
+      <span style="font-size: 18px">
+        <span *ngIf="node.read_only" style="color: grey; margin-left: 4px">
+          {{ node.name || "empty" }}
+        </span>
+        <span
+          *ngIf="!node.read_only"
+          style="color: blue; cursor: pointer"
+          title="id = {{ node.id }}"
+        >
+          <ngx-edit-inline
+            style="display: inline !important; font-size: 18px"
+            [value]="node.name"
+            [type]="'text'"
+            [debounceTime]="5000"
+            [selectText]="true"
+            [placeholder]="'enter node name'"
+            (onValueChanged)="changedValue({$event, 'id': node.id, 'name': $event})"
+          ></ngx-edit-inline>
+        </span>
+        <mat-icon class="add" (click)="open(content, node.id)"
+          >add_shopping_cart</mat-icon
+        >
+        <mat-icon
+          *ngIf="!node.read_only"
+          class="delete"
+          (click)="delete(node.id)"
+          >delete_forever</mat-icon
+        >
+      </span>
+
+      <div [class.example-tree-invisible]="!treeControl.isExpanded(node)">
+        <ng-container cdkTreeNodeOutlet></ng-container>
+      </div>
+    </cdk-nested-tree-node>
+  </cdk-tree>
+</div>
+
+<br />
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Add node</h4>
+    <button
+      type="button"
+      class="close sm"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <label for="name">Parent node id = {{ newNode.parent }}</label>
+        <div class="input-group">
+          <input
+            id="name"
+            class="form-control"
+            placeholder="enter node name"
+            name="dp"
+            [(ngModel)]="newNode.name"
+            #ctrl="ngModel"
+          />
+        </div>
+        <div class="input-group">
+          <input
+            id="desc"
+            class="form-control"
+            placeholder="node description"
+            name="desc"
+            [(ngModel)]="newNode.description"
+          />
+        </div>
+        <div class="input-group">
+          <label ngbButtonLabel>
+            Read only
+            <input
+              type="checkbox"
+              name="read_only"
+              ngbButton
+              [(ngModel)]="newNode.read_only"
+            />
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-dark"
+      (click)="modal.close('Save click')"
+    >
+      Save
+    </button>
+  </div>
+</ng-template>
